@@ -1,0 +1,28 @@
+name: Build and Release
+on:
+  push:
+    tags:
+      - "v*"
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - run: pip install pyinstaller requests
+      - name: Version auslesen
+        id: version
+        run: echo "VERSION=$(Get-Content version.txt)" >> $env:GITHUB_ENV
+      - run: pyinstaller --noconsole --onefile --name "RwG DayZ Launcher" src/RwG_Launcher.py
+      - run: |
+          mkdir release
+          copy dist\"RwG DayZ Launcher.exe" release\
+          copy version.txt release\
+          Compress-Archive -Path release\* -DestinationPath RwG_Launcher.zip
+      - uses: softprops/action-gh-release@v1
+        with:
+          name: RwG Launcher ${{ env.VERSION }}
+          tag_name: v${{ env.VERSION }}
+          files: RwG_Launcher.zip
