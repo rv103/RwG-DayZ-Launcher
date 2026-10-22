@@ -1,8 +1,0 @@
-__pycache__/
-*.py[cod]
-build/
-dist/
-*.exe
-*.zip
-release/
-config.json
